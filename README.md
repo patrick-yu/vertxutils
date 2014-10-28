@@ -1,2 +1,2 @@
-vertxutils
-==========
+Vert.x Utils
+============
