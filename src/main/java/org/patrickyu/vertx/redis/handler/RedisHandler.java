@@ -1,26 +1,29 @@
 package org.patrickyu.vertx.redis.handler;
 
-import org.patrickyu.vertx.http.VertxHandler;
+import org.patrickyu.vertx.daohandler.BaseDaoHandler;
+import org.patrickyu.vertx.handler.BaseDBHandler;
 import org.vertx.java.core.eventbus.Message;
 import org.vertx.java.core.json.JsonObject;
 
-public abstract class RedisHandler extends VertxHandler<Message<JsonObject>> {
+public abstract class RedisHandler extends BaseDBHandler {
+
+	public RedisHandler(BaseDaoHandler callbackHandler) {
+		super(callbackHandler);
+	}
 
 	@Override
 	public void doHandle(Message<JsonObject> value) {
 		JsonObject body = value.body();
 		if (body.getString("status").equals("ok")) {
 			this.onSuccess(body);
-		} else {
-			this.onError(body.getString("message"), body.getString("error"));
+		}
+		else {
+			String className = body.getString("error");
+			String message = body.getString("message");
+			Throwable e = this.getThrowableInstance(className, message);
+			onException(e);
 		}
 	}
 
-	@Override
-	public void onException(Throwable e) {
-		onError(e.getMessage(), e.getClass().getCanonicalName());
-	}
-
 	public abstract void onSuccess(JsonObject json);
-	public abstract void onError(String message, String error);
 }

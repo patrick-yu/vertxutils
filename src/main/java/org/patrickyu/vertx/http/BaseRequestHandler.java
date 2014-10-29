@@ -13,11 +13,11 @@ public abstract class BaseRequestHandler extends Middleware {
 			request.response().headers()
 				.add("Access-Control-Allow-Origin", "*")
 				.add("Access-Control-Allow-Credentials", "true");
-			run(request);
+			run(request, next);
 		} catch (Exception e) {
 			next.handle(e);
 		}
 	}
 
-	public abstract void run(YokeRequest request);
+	public abstract void run(YokeRequest request, Handler<Object> next);
 }
